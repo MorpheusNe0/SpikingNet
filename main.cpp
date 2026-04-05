@@ -7,11 +7,24 @@
 int main()
 {
     snn::Network net;
+    net.addLayerNeuron(3, 1);
+    net.addLayerNeuron(2, 3);
+    net.addLayerNeuron(3, 2);
+    net.addLayerNeuron(2, 0);
+    net.addLayerNeuron(1, 0);
+    net.addModulator(0.7d);
+    net.addConnModulator(4, 0, 0, 0.5d, false);
+    net.randomConnection(0, 1, 0.6, 0.1, 0.8, 0.8); 
+    net.randomConnection(0, 2, 0.7, 0.2, 1.0, 0.8);
+    net.randomConnection(1, 2, 0.5, -0.6, -0.1, 0.7);
+    net.randomConnection(2, 3, 0.8, 0.3, 0.9, 0.8);  
+    net.randomConnection(3, 4, 1.0, 0.4, 0.7, 0.8);
+    net.randomConnection(1, 3, 0.7d, -0.4d, 0.0d, 0.9d);
     std::vector<double> inp(3, 0.0d);
     double time = 0.0d;
-    std::vector<double> decay(3, 0.89d); //= {0.95d, 0.45d, 0.7d, 0.82d, 0.39d, 0.99d, 0.36d, 0.291d};
+    double decay = 0.80d;
     double count = 60.0d;
-    double signal = 5.0d;
+    double signal = 3.0d;
     while(true) {
         if(time >= count) break;
         std::cout << "time = " << time << '\n';
@@ -24,19 +37,16 @@ int main()
         //if (GetAsyncKeyState('J') & 0x8000) inp[6] = signal;
         //if (GetAsyncKeyState('K') & 0x8000) inp[7] = signal;
         if (GetAsyncKeyState('Q') & 0x8000) break;
-
-        for (int i = 0; i < 3; i++) {
-            inp[i] *= decay[i];
+        for (auto& i : inp) {
+            i *= decay;
         }
-
         net.step(time, inp, 0.0d);
-        net.logSpikeVisual();
-        
+        net.logSpikeVisual(); 
         time += dt;
         Sleep(1);
     }
     std::cout << '\n';
     net.printWeights();
-    system("pause");
+    system("pause"); 
     return 0;
 } 
